@@ -16,8 +16,6 @@ contract DEX
     uint public tokenAPrice;
     uint public tokenBPrice;
 
-    event Price(uint tokenA_Price, uint tokenB);
-
     constructor(address _tokenA, address _tokenB, address _tokenOwner)
     {
         tokenA = _tokenA;
@@ -25,58 +23,113 @@ contract DEX
         tokenOwner = _tokenOwner;
     }
 
-    function swapRate() private returns(uint, uint)
+    function addLiquidity(uint _amountTokenA_B) public
     {
-        totalA = IERC20(tokenA).balanceOf(tokenOwner);
-        totalB = IERC20(tokenB).balanceOf(tokenOwner);
+        require(IERC20(tokenA).balanceOf(msg.sender) >= _amountTokenA_B, "Not enough TokenA");
+        require(IERC20(tokenB).balanceOf(msg.sender) >= _amountTokenA_B, "Not enough TokenB");
 
-        tokenAPrice =  (totalA * 10 ** 9) / totalB ;
-        tokenBPrice =  (totalB * 10 ** 9) / totalA ;
+        IERC20(tokenA).approve(address(this),_amountTokenA_B);
+        IERC20(tokenB).approve(address(this),_amountTokenA_B);
+        IERC20(tokenA).transferFrom(msg.sender, address(this), _amountTokenA_B);
+        IERC20(tokenB).transferFrom(msg.sender, address(this), _amountTokenA_B);
+    }
 
-        //return(totalA,totalB);
+    function checkPool() public view returns(uint A, uint B)
+    {
+        return (IERC20(tokenA).balanceOf(address(this)), IERC20(tokenB).balanceOf(address(this)) );
+    }
+
+    function swapRate() public returns(uint, uint)
+    {
+        uint tA = IERC20(tokenA).balanceOf(address(this)); 
+        uint tB = IERC20(tokenB).balanceOf(address(this));
+        totalA = tA * 10 ** 18 ;
+        totalB = tB * 10 ** 18 ;
+
+        tokenAPrice =  tA / totalB;
+        tokenBPrice =  tB / totalA;
+
         return(tokenAPrice,tokenBPrice);
     }
 
-    function fetchPrice() public 
+    function AtoB(uint _amount) public returns(uint amountOfA, uint totalAmount, uint amountOfB)
     {
-        swapRate();
-        emit Price(tokenAPrice, tokenBPrice);
-    }
-
-// 1 A = 20rs
-// 1 B = 5rs;
-
-    function AtoB(uint _QTY) public  returns(uint B)
-    {
-        // swapRate();       
-        require(IERC20(tokenA).balanceOf(msg.sender) >= _QTY);
-
-        uint amountA = _QTY * tokenAPrice; 
-        amountA = amountA * 10 ** 9;
-        uint swapB = amountA / tokenBPrice;
-
-        IERC20(tokenA).approve(address(this),_QTY);
+        require(IERC20(tokenA).balanceOf(msg.sender) >= _amount, "you haven't enough balance of TokenA ");
         
-        IERC20(tokenA).transferFrom(msg.sender,tokenOwner,_QTY);
-        IERC20(tokenB).transferFrom(tokenOwner,msg.sender,swapB);
+        uint amountA = _amount * tokenAPrice;
+        uint swapB = amountA / tokenBPrice;
+        require(IERC20(tokenB).balanceOf(address(this)) >= swapB, "There is not enough Liquidity");
 
-        return swapB;
+        IERC20(tokenA).transferFrom(msg.sender, address(this), _amount);
+        IERC20(tokenB).transferFrom(address(this),msg.sender,swapB);
+
+        return(_amount,amountA,swapB );   
     }
 
-    function BtoA(uint _QTY) public returns(uint A)
+    function BtoA(uint _amount) public returns(uint amountOfB, uint totalAmount, uint amountOfA)
     {
-        require(IERC20(tokenB).balanceOf(msg.sender) >= _QTY);
-        //require(_QTY % 4 == 0,"please provide proper value");
+        require(IERC20(tokenB).balanceOf(msg.sender) >= _amount, "You haven't enough balance of TokenB ");
 
-        uint amountB = _QTY * tokenBPrice;
-        amountB = amountB * 10 ** 9;
+        uint amountB = _amount * tokenBPrice;
         uint swapA = amountB / tokenAPrice;
+        require(IERC20(tokenA).balanceOf(address(this)) >= swapA, "There is not enough Liquidity");
 
-        IERC20(tokenB).approve(address(this),_QTY);
+        IERC20(tokenB).transferFrom(msg.sender, address(this), _amount);
+        IERC20(tokenA).transferFrom(address(this), msg.sender, swapA);
 
-        IERC20(tokenB).transferFrom(msg.sender,tokenOwner,_QTY);
-        IERC20(tokenA).transferFrom(tokenOwner,msg.sender,swapA);
-        return swapA;
+        return(_amount,amountB,swapA);  
     }
-
 }
+
+
+
+
+
+
+
+
+
+
+//     function fetchPrice() public 
+//     {
+//         swapRate();
+//         emit Price(tokenAPrice, tokenBPrice);
+//     }
+
+
+    // function AtoB(uint _QTY) public returns(uint B)
+    // {       
+    //     uint weiQTY = _QTY;   
+    //     require(IERC20(tokenA).balanceOf(msg.sender) >= weiQTY,"Not enough balance");
+
+    //     uint amountA = weiQTY * tokenAPrice; 
+    //     uint swapB = amountA / tokenBPrice;
+
+    //     //IERC20(tokenA).approve(tokenOwner,weiQTY);
+    //     //IERC20(tokenA).transferFrom(msg.sender,tokenOwner,weiQTY);
+    //     IERC20(tokenA).transfer(msg.sender,weiQTY);
+
+    //     //IERC20(tokenB).approve(msg.sender,swapB);
+    //     IERC20(tokenB).transferFrom(tokenOwner,msg.sender,swapB);
+
+    //     return swapB;
+    // }
+
+//     function BtoA(uint _QTY) public returns(uint A)
+//     {
+//         swapRate();
+//         uint weiQTY = _QTY * 10 ** 18;
+//         require(IERC20(tokenB).balanceOf(msg.sender) >= weiQTY);
+//         //require(_QTY % 4 == 0,"please provide proper value");
+
+//         uint amountB = weiQTY * tokenBPrice;
+//         amountB = amountB * 10 ** 18;
+//         uint swapA = amountB / tokenAPrice;
+
+//         IERC20(tokenB).approve(address(this),weiQTY);
+
+//         IERC20(tokenB).transferFrom(msg.sender,tokenOwner,weiQTY);
+//         IERC20(tokenA).transferFrom(tokenOwner,msg.sender,swapA);
+//         return swapA;
+//     }
+

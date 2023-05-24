@@ -27,29 +27,10 @@
 				"type": "constructor"
 			},
 			{
-				"anonymous": false,
-				"inputs": [
-					{
-						"indexed": false,
-						"internalType": "uint256",
-						"name": "tokenA_Price",
-						"type": "uint256"
-					},
-					{
-						"indexed": false,
-						"internalType": "uint256",
-						"name": "tokenB",
-						"type": "uint256"
-					}
-				],
-				"name": "Price",
-				"type": "event"
-			},
-			{
 				"inputs": [
 					{
 						"internalType": "uint256",
-						"name": "_QTY",
+						"name": "_amount",
 						"type": "uint256"
 					}
 				],
@@ -57,7 +38,17 @@
 				"outputs": [
 					{
 						"internalType": "uint256",
-						"name": "B",
+						"name": "amountOfA",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "totalAmount",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "amountOfB",
 						"type": "uint256"
 					}
 				],
@@ -68,7 +59,7 @@
 				"inputs": [
 					{
 						"internalType": "uint256",
-						"name": "_QTY",
+						"name": "_amount",
 						"type": "uint256"
 					}
 				],
@@ -76,7 +67,17 @@
 				"outputs": [
 					{
 						"internalType": "uint256",
-						"name": "A",
+						"name": "amountOfB",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "totalAmount",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "amountOfA",
 						"type": "uint256"
 					}
 				],
@@ -84,9 +85,51 @@
 				"type": "function"
 			},
 			{
-				"inputs": [],
-				"name": "fetchPrice",
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "_amountTokenA_B",
+						"type": "uint256"
+					}
+				],
+				"name": "addLiquidity",
 				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "checkPool",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "A",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "B",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "swapRate",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
 				"stateMutability": "nonpayable",
 				"type": "function"
 			},
@@ -197,11 +240,11 @@
 	},
 	"sources": {
 		"3_Token Swap/DEX.sol": {
-			"keccak256": "0x4ff93c963c0e829f3e66508674dfb9815c5bf5b5e45feb9b30c353c249b7a239",
+			"keccak256": "0x59b83d11123906d6480473ebdcc38257b9d43ba99164bb1aa32672df9c87eea4",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://5146aaa2b9e2a15991dfd5d04e9ca45d20a748107cf49b99528a5716596a2220",
-				"dweb:/ipfs/Qma7GshSuhoouoQG1upgVz94Doa9emzeQAXLW2TxaYJ55G"
+				"bzz-raw://36ea8ec70718b5a922633f960d905996211ceae4ee447b92b7b77fe118871650",
+				"dweb:/ipfs/QmNPU3iUwgH4Qf9ku9frYfuiCADb24xuNVuJREbxP8MDQy"
 			]
 		},
 		"https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/token/ERC20/IERC20.sol": {
