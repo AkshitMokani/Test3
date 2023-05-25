@@ -8,11 +8,13 @@
 
 
 2. Timelock Contract 
+
     • Create a contract that implements a timelock mechanism where funds can only be withdrawn by the beneficiary after a specific release time has passed. 
     • Add the following features - 
         => The beneficiary and the release time will be set during deployment that represents theaddress that can only withdraw the funds and timestamp when the funds become available.
 
 
 3. Token Swap 
+
     • Create a smart contract that enables decentralized token swapping. 
     • Users should be able to exchange one ERC-20 token for another based on a predefined exchange rate
